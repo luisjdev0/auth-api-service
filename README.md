@@ -14,8 +14,19 @@ El objetivo de este servicio es que a través de una base de datos, permita rela
 
 ## Endpoints
 
-Este servicio cuenta con 4 características, creación de usuario, registro de microservicio, authorización/denegación de usuario a microservicio, y migración para generar todas las tablas que requiere el mismo.
+Este servicio cuenta con 5 características, gestión de usuarios, gestión de microservicios, gestión de permisos, autenticación y migración para generar todas las tablas que requiere el mismo.
+
+## Payload
+
+Todos los endpoints exceptuando el correspondiente a autenticación, requieren autorización por cabeceras y corresponderá al token definido en las variables de entorno de la siguiente forma:
+
+```http
+Authorization: Bearer AUTH_SECRET_TOKEN
+```
 
 ### Gestión de usuarios.
 
-```GET /users```
+```http
+GET /users
+```
+Ontiene todos los usuarios
