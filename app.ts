@@ -1,44 +1,54 @@
-import express from "express";
+import express, { Request, Response, NextFunction } from "express";
+import compression from "compression";
+import cors from "cors";
 import dotenv from "dotenv";
-import joi from "joi";
-import { query } from "./helpers";
+import { authMiddleware } from "./helpers";
+import { authEndpoint } from "./endpoints/auth";
+import {
+  createUser,
+  deleteUser,
+  getUsers,
+  updateUser,
+} from "./endpoints/users";
+import { runMigrate } from "./endpoints/migrate";
+import { createApi, deleteApi, getApis, updateApi } from "./endpoints/apis";
+import { authorizeApi, revokeApi } from "./endpoints/permissions";
 
 dotenv.config();
 
 const app = express();
 
-app.use(express.json())
+app.use(cors());
+app.use(compression());
+app.use(express.json());
 
-app.post("/", async (req, res) => {
-  const scheme = joi.object({
-    email: joi.string().email().required(),
-    pwd: joi.string().required(),
-    id_api: joi.string().required(),
-  })
-
-  const validation = scheme.validate(req.body);
-  if (validation.error) {
-    res.status(400).json({
-      status: 400,
-      params: req.body ?? req.query,
-      errors: validation.error.message
-    });
-    return
+app.use((err: any, req: Request, res: Response, next: NextFunction): void => {
+  if (err instanceof SyntaxError && "body" in err) {
+    res.status(400).json({ status: 400, mensaje: "Invalid JSON" });
+    return;
   }
-
-  const { email, pwd, id_api } = validation.value
-
-  const result = await query('SELECT * FROM user_api A JOIN user B ON A.ID_USER = B.ID JOIN api C ON A.ID_API = C.ID WHERE B.EMAIL = ? AND C.API_ID = ?', [
-    email, id_api
-  ])
-
-  res.json({
-    message: "Bienvenido",
-    result
-  });
+  next();
 });
 
-app.get("*", (req, res) => {
+app.post("/", authEndpoint);
+
+app.get("/users", authMiddleware, getUsers);
+app.post("/users", authMiddleware, createUser);
+app.patch("/users/:id", authMiddleware, updateUser);
+app.delete("/users/:id", authMiddleware, deleteUser);
+
+app.post("/migrate", authMiddleware, runMigrate);
+
+app.get("/apis", authMiddleware, getApis)
+app.post("/apis", authMiddleware, createApi)
+
+app.patch('/apis/:id', authMiddleware, updateApi)
+app.delete('/apis/:id', authMiddleware, deleteApi)
+
+app.post('/authorize', authMiddleware, authorizeApi)
+app.post('/revoke', authMiddleware, revokeApi)
+
+app.all("*", (req, res) => {
   res.status(400).json({
     status: 400,
     params: req.body ?? req.query,
