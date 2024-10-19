@@ -90,3 +90,17 @@ export const revokeApi = async (req: Request, res: Response) => {
     });
   }
 };
+
+export const getAuthorizedUserApis = async (req: Request, res: Response) => {
+  try {
+    const users = await executeQuery(
+      "SELECT A.id, A.creation_date, B.username, C.api_name, C.api_id, A.expiration_rate FROM user_api A JOIN user B ON A.id_user = B.id JOIN api C on A.id_api = C.id"
+    );
+    res.json(users);
+  } catch (e: any) {
+    res.status(500).json({
+      status: 500,
+      message: e,
+    });
+  }
+}

@@ -12,7 +12,7 @@ import {
 } from "./endpoints/users";
 import { runMigrate } from "./endpoints/migrate";
 import { createApi, deleteApi, getApis, updateApi } from "./endpoints/apis";
-import { authorizeApi, revokeApi } from "./endpoints/permissions";
+import { authorizeApi, getAuthorizedUserApis, revokeApi } from "./endpoints/authorize";
 
 dotenv.config();
 
@@ -45,8 +45,9 @@ app.post("/apis", authMiddleware, createApi)
 app.patch('/apis/:id', authMiddleware, updateApi)
 app.delete('/apis/:id', authMiddleware, deleteApi)
 
+app.get('/authorize', authMiddleware, getAuthorizedUserApis)
 app.post('/authorize', authMiddleware, authorizeApi)
-app.post('/revoke', authMiddleware, revokeApi)
+app.delete('/authorize', authMiddleware, revokeApi)
 
 app.all("*", (req, res) => {
   res.status(400).json({

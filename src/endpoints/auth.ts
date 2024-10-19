@@ -24,8 +24,8 @@ export const authEndpoint = async (req: Request, res: Response) => {
 
   try {
     const result = await executeQuery(
-      "SELECT * FROM user_api A JOIN user B ON A.id_user = B.id JOIN api C ON A.id_api = C.id WHERE B.email = ? AND C.api_id = ? AND enabled=1",
-      [email, id_api]
+      "SELECT * FROM user_api A JOIN user B ON A.id_user = B.id JOIN api C ON A.id_api = C.id WHERE B.email = ? AND OR B.user = ? AND C.api_id = ? AND enabled=1 ORDER BY B.id",
+      [email, email, id_api]
     );
 
     const user_data = (result as Array<any>)[0];
