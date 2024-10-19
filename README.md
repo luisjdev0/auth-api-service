@@ -4,7 +4,7 @@ Microservicio para la autorización y gestión de accesos de otros microservicio
 
 ## Concepto
 
-El objetivo de este servicio es que a través de una base de datos, permita relacionar usuarios con otros microservicios de la API, de forma que según el usuario y sus permisos, podrá autenticarse obteniendo un token JWT el cuál puede ser configurado para tener un tiempo de expiración desde que se realiza la autenticación, cada microservicio que requiera autenticación, deberá poseer la firma del token JWT y los medios para validar el token, de forma que solo permitirá el acceso si el token compartido es válido, coincide con el ID del microservicio y no ha expirado.
+El objetivo de este servicio es que a través de una RESTful API y una base de datos, permita relacionar usuarios con otros microservicios de la API, de forma que según el usuario y sus permisos, podrá autenticarse obteniendo un token JWT el cuál puede ser configurado para tener un tiempo de expiración desde que se realiza la autenticación, cada microservicio que requiera autenticación, deberá poseer la firma del token JWT y los medios para validar el token, de forma que solo permitirá el acceso si el token compartido es válido, coincide con el ID del microservicio y no ha expirado.
 
 ## Requisitos
 
@@ -40,7 +40,7 @@ POST /migrate
 
 Para autenticarse en un servicio, se realizará la siguiente petición
 
-```json
+```http
 POST /
 
 {
@@ -62,7 +62,7 @@ GET /users
 ```
 Registrar un usuario en el servicio para poder autenticarse:
 
-```json
+```http
 POST /users
 
 {
@@ -75,7 +75,7 @@ POST /users
 
 Actualizar un usuario existente en el servicio, puede ser actualizado cualquier valor y no se requiere de la representación completa del objeto:
 
-```json
+```http
 PATCH /users/<ID>
 
 {
@@ -102,7 +102,7 @@ GET /apis
 
 Registrar una API:
 
-```json
+```http
 POST /apis
 
 {
@@ -113,7 +113,7 @@ POST /apis
 
 Editar una API registrada, no se requiere de la representación completa del objeto:
 
-```json
+```http
 PATCH /apis/<ID>
 
 {
@@ -138,20 +138,21 @@ Para listar los permisos asignados:
 GET /authorize
 ```
 
-Para autorizar un usuario a una API
+Para autorizar un usuario a una API, el ```expiration_rate``` se define utilizando el formato de [vercel/ms](https://github.com/vercel/ms]):
 
-```json
+```http
 POST /authorize
 
 {
     "username" : "Username or Email",
-    "api_id" : "YOUR_API_ID"
+    "api_id" : "YOUR_API_ID",
+    "expiration_rate" : "1d"
 }
 ```
 
 Para revocar un usuario de una API:
 
-```json
+```http
 DELETE /authorize
 
 {
