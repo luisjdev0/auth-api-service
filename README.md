@@ -138,7 +138,7 @@ Para listar los permisos asignados:
 GET /authorize
 ```
 
-Para autorizar un usuario a una API, el ```expiration_rate``` es opcional y se define utilizando el formato de [vercel/ms](https://github.com/vercel/ms]):
+Para autorizar un usuario a una API, el ```expiration_rate``` es opcional y se define utilizando el formato de [vercel/ms](https://github.com/vercel/ms):
 
 ```http
 POST /authorize
